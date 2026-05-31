@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: url-shortener
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/url_shortener}
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      ssl:
+        enabled: ${REDIS_SSL:false}
+
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8080}
+  api-url: ${API_URL:http://localhost:8080}
+  jwt:
+    secret: ${JWT_SECRET:local-dev-secret-change-me-32chars-min}
+    access-token-expiry-minutes: 15
+    refresh-token-expiry-days: 7
+  cache:
+    url-ttl-seconds: 3600
+    negative-ttl-seconds: 300
+  rate-limit:
+    anonymous-create-per-hour: 10
+    auth-create-per-hour: 100
+    api-per-minute: 100
+    redirect-per-minute: 1000
+  counter:
+    initial-seed: 100000
+  ip-hash-salt: ${IP_HASH_SALT:dev-salt}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+server:
+  port: ${SERVER_PORT:8080}
+
+# Ensure console logging is enabled and set sensible default levels so logs appear
+logging:
+  level:
+    root: INFO
+    com.urlshortener: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+
