@@ -39,6 +39,8 @@ public class UserDocument {
 
     private UserRole role;
 
+    private String refreshTokenHash;
+
     @CreatedDate
     @Indexed(direction = IndexDirection.DESCENDING)
     private Instant createdAt;

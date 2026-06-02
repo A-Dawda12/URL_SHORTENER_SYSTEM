@@ -25,6 +25,8 @@ public class User {
     private String passwordHash;
     private String displayName;
     private UserRole role;
+    /** BCrypt of refresh token, null until first Login */
+    private String refreshTokenHash;
     private Instant createdAt;
     private Instant updatedAt;
 }

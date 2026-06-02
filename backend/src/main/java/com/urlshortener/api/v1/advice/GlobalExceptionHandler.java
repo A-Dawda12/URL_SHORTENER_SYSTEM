@@ -3,6 +3,8 @@ package com.urlshortener.api.v1.advice;
 import com.urlshortener.api.v1.dto.response.ApiErrorResponse;
 import com.urlshortener.api.v1.dto.response.ApiMeta;
 import com.urlshortener.domain.exception.EmailAlreadyExistsException;
+import com.urlshortener.domain.exception.InvalidCredentialsException;
+import com.urlshortener.domain.exception.InvalidRefreshTokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -34,6 +36,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmailAlreadyExistsException.class)
     ResponseEntity<ApiErrorResponse> handleEmailExists(EmailAlreadyExistsException ex) {
         return error(HttpStatus.CONFLICT, "EMAIL_ALREADY_EXISTS", ex.getMessage());
+    }
+
+    /** Wrong email/password on login */
+    @ExceptionHandler(InvalidCredentialsException.class)
+    ResponseEntity<ApiErrorResponse> handleInvalidCredentials(InvalidCredentialsException ex) {
+        return error(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    ResponseEntity<ApiErrorResponse> handleInvalidRefreshToken(InvalidRefreshTokenException ex) {
+        return error(HttpStatus.UNAUTHORIZED, "INVALID_REFRESH_TOKEN", ex.getMessage());
     }
 
     /** Fallback for unexpected errors. */

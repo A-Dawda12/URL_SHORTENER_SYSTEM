@@ -18,6 +18,7 @@ public class UserMapper {
                 .passwordHash(document.getPasswordHash())
                 .displayName(document.getDisplayName())
                 .role(document.getRole())
+                .refreshTokenHash(document.getRefreshTokenHash())
                 .createdAt(document.getCreatedAt())
                 .updatedAt(document.getUpdatedAt())
                 .build();
@@ -33,6 +34,7 @@ public class UserMapper {
                 .passwordHash(user.getPasswordHash())
                 .displayName(user.getDisplayName())
                 .role(user.getRole())
+                .refreshTokenHash(user.getRefreshTokenHash())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();

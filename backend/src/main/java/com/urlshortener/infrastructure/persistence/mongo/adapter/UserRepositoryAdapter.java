@@ -31,6 +31,11 @@ public class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
+    public Optional<User> findById(String id) {
+        return mongoRepository.findById(id).map(userMapper::toDomain);
+    }
+
+    @Override
     public boolean existsByEmail(String email) {
         return mongoRepository.existsByEmail(email);
     }
