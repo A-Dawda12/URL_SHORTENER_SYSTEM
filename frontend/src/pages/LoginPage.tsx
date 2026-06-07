@@ -1,93 +1,175 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
-import {Link} from 'react-router-dom';
-import {AuthLayout} from '../components/layout/AuthLayout';
-import {AuthButton} from '../components/ui/AuthButton';
-import {AuthInput, LockIcon, UserIcon} from '../components/ui/AuthInput';
-import type {FormErrors, LoginForm} from '../types/auth.types';
-import {validateEmail, validatePassword} from '../utils/validation';
+import { useEffect, useState, type FormEvent } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+
+import { ApiError } from '../api/apiError';
+import { AuthLayout } from '../components/layout/AuthLayout';
+import { AuthButton } from '../components/ui/AuthButton';
+import { AuthInput, LockIcon, UserIcon } from '../components/ui/AuthInput';
+import { useAuth } from '../context/AuthContext';
+
+import type { FormErrors, LoginForm } from '../types/auth.types';
+
+import {
+  validateEmail,
+  validatePassword,
+} from '../utils/validation';
+
+type LoginLocationState = {
+  message?: string;
+  from?: string;
+};
 
 export function LoginPage() {
-    const [form, setForm] = useState<LoginForm>({ email: '', password: '' });
-    const [errors, setErrors] = useState<FormErrors<LoginForm>>({});
-    const [submitMessage, setSubmitMessage] = useState('');
-    const [loading, setLoading] = useState(false);
+  const { login, isAuthenticated } = useAuth();
 
-    function updateField(field: keyof LoginForm, value: string) {
-        setForm((current) => ({ ...current, [field]: value }));
-        setErrors((current) => ({ ...current, [field]: undefined }));
-        setSubmitMessage('');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const locationState = (location.state as LoginLocationState | null) ?? {};
+
+  const [form, setForm] = useState<LoginForm>({
+    email: '',
+    password: '',
+  });
+
+  const [errors, setErrors] = useState<FormErrors<LoginForm>>({});
+  const [submitMessage, setSubmitMessage] = useState(
+    locationState.message ?? ''
+  );
+  const [submitError, setSubmitError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
     }
+  }, [isAuthenticated, navigate]);
 
-    function validate(): boolean {
-        const nextErrors: FormErrors<LoginForm> = {
-            email: validateEmail(form.email),
-            password: validatePassword(form.password)
-        };
-        setErrors(nextErrors);
-        return !Object.values(nextErrors).some((error) => !!error);
+  function updateField(
+    field: keyof LoginForm,
+    value: string
+  ) {
+    setForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+
+    setErrors((current) => ({
+      ...current,
+      [field]: undefined,
+    }));
+
+    setSubmitMessage('');
+    setSubmitError('');
+  }
+
+  function validate(): boolean {
+    const nextErrors: FormErrors<LoginForm> = {
+      email: validateEmail(form.email),
+      password: validatePassword(form.password),
+    };
+
+    setErrors(nextErrors);
+
+    return !nextErrors.email && !nextErrors.password;
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!validate()) return;
+
+    setLoading(true);
+    setSubmitMessage('');
+    setSubmitError('');
+
+    try {
+      await login({
+        email: form.email.trim(),
+        password: form.password,
+      });
+
+      const redirectTo =
+        locationState.from ?? '/dashboard';
+
+      navigate(redirectTo, {
+        replace: true,
+      });
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setSubmitError(error.message);
+      } else {
+        setSubmitError(
+          'Unable to reach the server. Is the backend running on port 8080?'
+        );
+      }
+    } finally {
+      setLoading(false);
     }
+  }
 
-    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        if (!validate()) {
-            return;
-        }
+  return (
+    <AuthLayout
+      title="Welcome to URL Shortener"
+      subtitle="Sign in with your account"
+      footer={
+        <>
+          New here?{' '}
+          <Link
+            to="/signup"
+            className="font-medium text-teal-600 hover:text-teal-700"
+          >
+            Create an account
+          </Link>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit}>
+        <AuthInput
+          id="login-email"
+          label="Email"
+          type="email"
+          value={form.email}
+          placeholder="Username or email"
+          error={errors.email}
+          icon={<UserIcon />}
+          onChange={(value) =>
+            updateField('email', value)
+          }
+        />
 
-        setLoading(true);
-        setSubmitMessage('');
+        <AuthInput
+          id="login-password"
+          label="Password"
+          type="password"
+          value={form.password}
+          placeholder="Password"
+          error={errors.password}
+          icon={<LockIcon />}
+          onChange={(value) =>
+            updateField('password', value)
+          }
+        />
 
-        await new Promise((resolve) => setTimeout(resolve, 600));
+        {submitMessage && (
+          <p className="mb-4 rounded-md bg-teal-50 px-3 py-2 text-sm text-teal-800">
+            {submitMessage}
+          </p>
+        )}
 
-        setLoading(false);
-        setSubmitMessage('Form looks good. API writing comes in step 7.');
-    }
+        {submitError && (
+          <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+            {submitError}
+          </p>
+        )}
 
-    return (
-        <AuthLayout
-            title="Welcome to URL Shortener"
-            subtitle="Sign in with your account"
-            footer={
-                <p className="text-center text-sm text-brand-link">
-                    New Here?{' '}
-                    <Link to="/signup" className="font-medium underline-offset-4 hover:underline">
-                        Create an account
-                    </Link>
-                </p>
-            }
+        <AuthButton
+          loading={loading}
+          disabled={loading}
         >
-            <form onSubmit={handleSubmit} noValidate>
-                <AuthInput
-                    id="login-email"
-                    label="Email"
-                    type="email"
-                    value={form.email}
-                    placeholder="User name or email"
-                    error={errors.email}
-                    icon={<UserIcon />}
-                    onChange={(value) => updateField('email', value)}
-                />
-                <AuthInput
-                    id="login-password"
-                    label="Password"
-                    type="password"
-                    value={form.password}
-                    placeholder="Your password"
-                    error={errors.password}
-                    icon={<LockIcon />}
-                    onChange={(value) => updateField('password', value)}
-                />
-
-                {submitMessage ? (
-                    <p className="mb-4 rounded-md bg-teal-100 px-3 py-2 text-sm text-teal-800">
-                        {submitMessage}
-                    </p>
-                ) : null}
-
-                <AuthButton loading={loading}>
-                    Login
-                </AuthButton>
-            </form>
-        </AuthLayout>
-    );
+          Login
+        </AuthButton>
+      </form>
+    </AuthLayout>
+  );
 }

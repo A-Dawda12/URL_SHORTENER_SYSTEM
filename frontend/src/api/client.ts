@@ -1,6 +1,6 @@
 import type { ApiErrorResponse, ApiResponse } from '../types/api.types';
 import { ApiError } from './apiError';
-import { clearAuthSession, getAccessToken, getRefreshToken, saveAuthSession } from '../utils/tokenSession';
+import { clearAuthSession, getAccessToken, getRefreshToken, saveAuthSession } from '../utils/tokenStorage';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080';
 
