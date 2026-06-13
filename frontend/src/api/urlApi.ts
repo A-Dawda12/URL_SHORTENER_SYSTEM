@@ -13,3 +13,10 @@ export function createUrl(payload: CreateUrlPayload): Promise<UrlData> {
         auth: true
     });
 }
+
+export function listUrls(): Promise<UrlData[]> {
+    return apiRequest<UrlData[]>('/api/v1/urls', {
+        method: 'GET',
+        auth: true
+    })
+}

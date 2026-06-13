@@ -10,13 +10,10 @@ import com.urlshortener.infrastructure.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,6 +26,13 @@ import java.util.UUID;
 public class UrlController {
 
     private final UrlService urlService;
+
+    @GetMapping
+    public ApiResponse<List<UrlResponse>> list() {
+        AuthenticatedUser user = SecurityUtils.requireAuthenticatedUser();
+        List<UrlResponse> data = urlService.listUrlsForOwner(user.getUserId());
+        return ApiResponse.ok(data, meta());
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

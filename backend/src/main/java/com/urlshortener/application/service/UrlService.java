@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UrlService {
@@ -33,6 +35,12 @@ public class UrlService {
 
         UrlLink saved = urlLinkRepoistory.save(urlLink);
         return toResponse(saved);
+    }
+
+    public List<UrlResponse> listUrlsForOwner(String ownerId) {
+        return urlLinkRepoistory.findByOwnerId(ownerId).stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     private UrlResponse toResponse(UrlLink urlLink) {
