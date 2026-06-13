@@ -37,7 +37,7 @@ public class UrlRepositoryAdapter implements UrlLinkRepoistory {
 
     @Override
     public List<UrlLink> findByOwnerId(String ownerId) {
-        return mongoRepository.findByOwnerIdOrderByCreatedAtDes(ownerId)
+        return mongoRepository.findByOwnerIdOrderByCreatedAtDesc(ownerId)
                 .stream()
                 .map(urlLinkMapper::toDomain)
                 .toList();

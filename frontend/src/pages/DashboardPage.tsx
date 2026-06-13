@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthHeader } from '../components/layout/AuthHeader';
 import { AuthButton } from '../components/ui/AuthButton';
 import { useAuth } from '../context/AuthContext';
+import { CreateUrlForm } from '../components/url/CreateUrlForm';
 
 export function DashboardPage() {
   const { user, logout } = useAuth();
@@ -27,13 +28,15 @@ export function DashboardPage() {
             {user?.email}
           </p>
 
-          <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-6 text-left text-sm text-gray-700">
+          {/* <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-6 text-left text-sm text-gray-700">
             <p className="mb-2">You are logged in.</p>
 
             <p className="text-gray-500">
               URL shortening features come in the next phase.
             </p>
-          </div>
+          </div> */}
+
+          <CreateUrlForm />
 
           <div className="mt-8">
             <AuthButton
