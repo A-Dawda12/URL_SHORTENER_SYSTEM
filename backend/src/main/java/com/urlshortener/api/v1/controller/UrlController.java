@@ -42,6 +42,13 @@ public class UrlController {
         return ApiResponse.ok(data, meta());
     }
 
+    @DeleteMapping("/{urlId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable String urlId) {
+        AuthenticatedUser user = SecurityUtils.requireAuthenticatedUser();
+        urlService.deleteUrl(user.getUserId(), urlId);
+    }
+
     private ApiMeta meta() {
         return new ApiMeta(UUID.randomUUID().toString(), Instant.now());
     }

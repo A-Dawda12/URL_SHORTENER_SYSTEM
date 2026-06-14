@@ -3,6 +3,8 @@ package com.urlshortener.application.service;
 import com.urlshortener.api.v1.dto.request.CreateUrlRequest;
 import com.urlshortener.api.v1.dto.response.UrlResponse;
 import com.urlshortener.config.AppProperties;
+import com.urlshortener.domain.exception.UrlForbiddenException;
+import com.urlshortener.domain.exception.UrlNotFoundException;
 import com.urlshortener.domain.port.UrlLinkRepoistory;
 import com.urlshortener.domain.url.UrlLink;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +43,16 @@ public class UrlService {
         return urlLinkRepoistory.findByOwnerId(ownerId).stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    public void deleteUrl(String ownerId, String urlId) {
+        UrlLink urlLink = urlLinkRepoistory.findById(urlId)
+                .orElseThrow(() -> new UrlNotFoundException(urlId));
+
+        if(!ownerId.equals(urlLink.getOwnerId())) {
+            throw new UrlForbiddenException();
+        }
+        urlLinkRepoistory.deleteById(urlId);
     }
 
     private UrlResponse toResponse(UrlLink urlLink) {
