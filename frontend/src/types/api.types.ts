@@ -40,3 +40,12 @@ export type RegisterData = {
     email: string;
     displayName: string;
 };
+
+export type UrlData = {
+    urlId: string;
+    shortCode: string;
+    shortUrl: string;
+    originalUrl: string;
+    title: string;
+    createdAt: string;
+};

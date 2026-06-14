@@ -1,12 +1,15 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { AuthHeader } from '../components/layout/AuthHeader';
 import { AuthButton } from '../components/ui/AuthButton';
 import { useAuth } from '../context/AuthContext';
+import { CreateUrlForm } from '../components/url/CreateUrlForm';
+import { UrlList } from '../components/url/UrlList';
 
 export function DashboardPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [listRefreshKey, setListRefreshKey] = useState(0);
 
   function handleLogout() {
     logout();
@@ -17,7 +20,7 @@ export function DashboardPage() {
     <div className="min-h-screen bg-white">
       <AuthHeader />
 
-      <main className="mx-auto flex min-h-[calc(100vh-88px)] max-w-xl flex-col items-center justify-center px-6 py-10">
+      <main className="mx-auto flex min-h-[calc(100vh-88px)] max-w-xl flex-col items-center px-6 py-10">
         <div className="w-full max-w-md text-center">
           <h1 className="mb-2 text-3xl font-extralight tracking-wide text-gray-900">
             Welcome, {user?.displayName}
@@ -27,13 +30,17 @@ export function DashboardPage() {
             {user?.email}
           </p>
 
-          <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-6 text-left text-sm text-gray-700">
+          {/* <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-6 text-left text-sm text-gray-700">
             <p className="mb-2">You are logged in.</p>
 
             <p className="text-gray-500">
               URL shortening features come in the next phase.
             </p>
-          </div>
+          </div> */}
+
+          <CreateUrlForm  onCreated={() => setListRefreshKey((key) => key  + 1)} />
+
+          <UrlList refreshKey={listRefreshKey} />
 
           <div className="mt-8">
             <AuthButton

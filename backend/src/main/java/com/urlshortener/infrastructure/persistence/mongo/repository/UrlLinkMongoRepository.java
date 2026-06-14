@@ -10,7 +10,7 @@ public interface UrlLinkMongoRepository extends MongoRepository<UrlLinkDocument,
 
     Optional<UrlLinkDocument> findByShortCode(String shortCode);
 
-    List<UrlLinkDocument> findByOwnerIdOrderByCreatedAtDes(String ownerId);
+    List<UrlLinkDocument> findByOwnerIdOrderByCreatedAtDesc(String ownerId);
 
     boolean existsByShortCode(String shortCode);
 }

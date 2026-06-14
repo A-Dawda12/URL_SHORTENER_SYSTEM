@@ -5,6 +5,7 @@ import com.urlshortener.api.v1.dto.response.ApiMeta;
 import com.urlshortener.domain.exception.EmailAlreadyExistsException;
 import com.urlshortener.domain.exception.InvalidCredentialsException;
 import com.urlshortener.domain.exception.InvalidRefreshTokenException;
+import com.urlshortener.domain.exception.ShortCodeGenerationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.crypto.ShortBufferException;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -47,6 +49,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidRefreshTokenException.class)
     ResponseEntity<ApiErrorResponse> handleInvalidRefreshToken(InvalidRefreshTokenException ex) {
         return error(HttpStatus.UNAUTHORIZED, "INVALID_REFRESH_TOKEN", ex.getMessage());
+    }
+
+    @ExceptionHandler(ShortBufferException.class)
+    ResponseEntity<ApiErrorResponse> handleShortCodeGeneration(ShortCodeGenerationException ex) {
+        return error(HttpStatus.SERVICE_UNAVAILABLE, "SHORT_CODE_GENERATION_FAILED", ex.getMessage());
     }
 
     /** Fallback for unexpected errors. */
