@@ -20,3 +20,10 @@ export function listUrls(): Promise<UrlData[]> {
         auth: true
     })
 }
+
+export function deleteUrl(urlId: string): Promise<void> {
+    return apiRequest<void>(`/api/v1/urls/${urlId}`, {
+        method: 'DELETE',
+        auth: true
+    })
+}

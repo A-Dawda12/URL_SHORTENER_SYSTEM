@@ -2,10 +2,7 @@ package com.urlshortener.api.v1.advice;
 
 import com.urlshortener.api.v1.dto.response.ApiErrorResponse;
 import com.urlshortener.api.v1.dto.response.ApiMeta;
-import com.urlshortener.domain.exception.EmailAlreadyExistsException;
-import com.urlshortener.domain.exception.InvalidCredentialsException;
-import com.urlshortener.domain.exception.InvalidRefreshTokenException;
-import com.urlshortener.domain.exception.ShortCodeGenerationException;
+import com.urlshortener.domain.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -54,6 +51,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ShortBufferException.class)
     ResponseEntity<ApiErrorResponse> handleShortCodeGeneration(ShortCodeGenerationException ex) {
         return error(HttpStatus.SERVICE_UNAVAILABLE, "SHORT_CODE_GENERATION_FAILED", ex.getMessage());
+    }
+
+    @ExceptionHandler(UrlNotFoundException.class)
+    ResponseEntity<ApiErrorResponse> handleUrlNotFound(UrlNotFoundException ex) {
+        return error(HttpStatus.NOT_FOUND, "URL_NOT_FOUND", ex.getMessage());
+    }
+
+    @ExceptionHandler(UrlForbiddenException.class)
+    ResponseEntity<ApiErrorResponse> handleUrlForbidden(UrlForbiddenException ex) {
+        return error(HttpStatus.FORBIDDEN, "URL_FORBIDDEN", ex.getMessage());
     }
 
     /** Fallback for unexpected errors. */

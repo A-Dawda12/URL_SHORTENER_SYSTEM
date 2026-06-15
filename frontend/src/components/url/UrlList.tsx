@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { listUrls } from '../../api/urlApi';
+import {deleteUrl, listUrls} from '../../api/urlApi';
 import type { UrlData } from '../../types/api.types';
 
 type UrlListProps = {
@@ -10,6 +10,7 @@ export function UrlList({ refreshKey = 0 }: UrlListProps) {
   const [urls, setUrls] = useState<UrlData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const loadUrls = useCallback(async () => {
     setLoading(true);
@@ -29,6 +30,19 @@ export function UrlList({ refreshKey = 0 }: UrlListProps) {
     void loadUrls();
   }, [loadUrls, refreshKey]);
 
+  async function handleDelete(urlId: string) {
+    setDeletingId(urlId);
+    setError('');
+    try {
+      await deleteUrl(urlId);
+      setUrls((current) => current.filter((url) => url.urlId !== urlId));
+    } catch {
+      setError('Unable to delete this link. Please try again.');
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   if (loading) {
     return (
       <p className="mt-8 text-sm font-light text-gray-500">
@@ -37,7 +51,7 @@ export function UrlList({ refreshKey = 0 }: UrlListProps) {
     );
   }
 
-  if (error) {
+  if (error && urls.length === 0) {
     return (
       <p className="mt-8 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
         {error}
@@ -58,7 +72,9 @@ export function UrlList({ refreshKey = 0 }: UrlListProps) {
       <h2 className="mb-4 text-lg font-light tracking-wide text-gray-900">
         My links
       </h2>
-
+      {error ? (
+          <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+      ) : null}
       <ul className="space-y-3">
         {urls.map((url) => (
           <li
@@ -88,6 +104,15 @@ export function UrlList({ refreshKey = 0 }: UrlListProps) {
               Code: {url.shortCode} ·{' '}
               {new Date(url.createdAt).toLocaleString()}
             </p>
+
+            <button
+              type="button"
+              disabled={deletingId === url.urlId}
+              onClick={() => void handleDelete(url.urlId)}
+              className="mt-2 text-xs font-medium text-reed-600 hover:underline disabled:opacity-50"
+            >
+              {deletingId === url.urlId ? 'Deleting...' : 'Delete'}
+            </button>
           </li>
         ))}
       </ul>
