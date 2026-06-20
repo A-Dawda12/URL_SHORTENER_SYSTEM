@@ -20,6 +20,7 @@ public class UrlService {
     private final UrlLinkRepoistory urlLinkRepoistory;
     private final ShortCodeGenerator shortCodeGenerator;
     private final AppProperties appProperties;
+    private final UrlCacheService urlCacheService;
 
     public UrlResponse createUrl(String ownerId, CreateUrlRequest request) {
         String shortCode = shortCodeGenerator.generateUniqueShortCode();
@@ -52,7 +53,9 @@ public class UrlService {
         if(!ownerId.equals(urlLink.getOwnerId())) {
             throw new UrlForbiddenException();
         }
+        String shortCode = urlLink.getShortCode();
         urlLinkRepoistory.deleteById(urlId);
+        urlCacheService.evict(shortCode);
     }
 
     private UrlResponse toResponse(UrlLink urlLink) {

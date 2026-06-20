@@ -43,6 +43,11 @@ public class UrlCacheService {
         );
     }
 
+    public void evict(String shortCode) {
+        redisTemplate.delete(urlKey(shortCode));
+        redisTemplate.delete(missKey(shortCode));
+    }
+
     private String urlKey(String shortCode) {
         return URL_KEY_PREFIX + shortCode;
     }
