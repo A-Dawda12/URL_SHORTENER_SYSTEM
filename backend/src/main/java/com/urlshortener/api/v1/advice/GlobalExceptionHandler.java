@@ -63,6 +63,11 @@ public class GlobalExceptionHandler {
         return error(HttpStatus.FORBIDDEN, "URL_FORBIDDEN", ex.getMessage());
     }
 
+    @ExceptionHandler(UrlLinkUnavailableException.class)
+    ResponseEntity<ApiErrorResponse> handleUrlUnavailable(UrlLinkUnavailableException ex) {
+        return error(HttpStatus.GONE, "URL_UNAVAILABLE", ex.getMessage());
+    }
+
     /** Fallback for unexpected errors. */
     @ExceptionHandler(Exception.class)
     ResponseEntity<ApiErrorResponse> handleUnhandled(Exception ex) {
