@@ -12,4 +12,6 @@ public class AppProperties {
 
     private String baseUrl = "http://localhost:8080";
 
+    private String ipHashSalt = "dev-salt";
+
 }

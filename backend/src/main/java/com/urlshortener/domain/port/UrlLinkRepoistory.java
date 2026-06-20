@@ -18,4 +18,6 @@ public interface UrlLinkRepoistory {
     boolean existsByShortCode(String shortCode);
 
     void deleteById(String id);
+
+    void incrementClickCount(String id);
 }
