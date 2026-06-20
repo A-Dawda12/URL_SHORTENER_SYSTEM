@@ -1,6 +1,7 @@
 package com.urlshortener;
 
 import com.urlshortener.config.AppProperties;
+import com.urlshortener.config.CacheProperties;
 import com.urlshortener.config.CounterProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,7 +12,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @SpringBootApplication
 @EnableMongoAuditing
 @EnableMongoRepositories(basePackages = "com.urlshortener.infrastructure.persistence.mongo")
-@EnableConfigurationProperties({CounterProperties.class, AppProperties.class})
+@EnableConfigurationProperties({CounterProperties.class, AppProperties.class, CacheProperties.class})
 public class UrlShortenerApplication {
 
     public static void main(String[] args) {

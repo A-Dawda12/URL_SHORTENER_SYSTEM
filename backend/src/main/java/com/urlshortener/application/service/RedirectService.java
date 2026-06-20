@@ -14,14 +14,29 @@ import java.time.Instant;
 public class RedirectService {
 
     private final UrlLinkRepoistory urlLinkRepoistory;
+    private final UrlCacheService urlCacheService;
 
     public String resolveOriginalUrl(String shortCode) {
+        return urlCacheService.getOriginalUrl(shortCode)
+                .orElseGet(() -> loadFromDatabase(shortCode));
+    }
+
+    private String loadFromDatabase(String shortCode) {
+        if(urlCacheService.isNegativeCacheHit(shortCode)) {
+            throw new UrlNotFoundException(shortCode);
+        }
+
         UrlLink urlLink = urlLinkRepoistory.findByShortCode(shortCode)
-                .orElseThrow(() -> new UrlNotFoundException(shortCode));
+                .orElseThrow(() -> {
+                    urlCacheService.cacheMiss(shortCode);
+                    return new UrlNotFoundException(shortCode);
+                });
 
         validateAvailable(urlLink);
 
-        return urlLink.getOriginalUrl();
+        String originalUrl = urlLink.getOriginalUrl();
+        urlCacheService.cacheUrl(shortCode, originalUrl);
+        return originalUrl;
     }
 
     private void validateAvailable(UrlLink urlLink) {
