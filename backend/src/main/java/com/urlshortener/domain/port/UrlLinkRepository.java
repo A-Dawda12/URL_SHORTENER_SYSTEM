@@ -5,7 +5,7 @@ import com.urlshortener.domain.url.UrlLink;
 import java.util.List;
 import java.util.Optional;
 
-public interface UrlLinkRepoistory {
+public interface UrlLinkRepository {
 
     UrlLink save(UrlLink urlLink);
 

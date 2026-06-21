@@ -3,7 +3,7 @@ package com.urlshortener.application.service;
 import com.urlshortener.config.AppProperties;
 import com.urlshortener.domain.analytics.ClickEvent;
 import com.urlshortener.domain.port.ClickEventRepository;
-import com.urlshortener.domain.port.UrlLinkRepoistory;
+import com.urlshortener.domain.port.UrlLinkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -20,13 +20,13 @@ import java.util.HexFormat;
 public class ClickRecordingService {
 
     private final ClickEventRepository clickEventRepository;
-    private final UrlLinkRepoistory urlLinkRepoistory;
+    private final UrlLinkRepository urlLinkRepository;
     private final AppProperties appProperties;
 
 
     @Async
     public void recordClick(String shortCode, String clientIp, String userAgent, String referrer) {
-        urlLinkRepoistory.findByShortCode(shortCode).ifPresent(urlLink -> {
+        urlLinkRepository.findByShortCode(shortCode).ifPresent(urlLink -> {
             ClickEvent clickEvent = ClickEvent.builder()
                     .urlId(urlLink.getId())
                     .shortCode(urlLink.getShortCode())
@@ -38,7 +38,7 @@ public class ClickRecordingService {
 
 
             clickEventRepository.save(clickEvent);
-            urlLinkRepoistory.incrementClickCount(urlLink.getId());
+            urlLinkRepository.incrementClickCount(urlLink.getId());
         });
     }
 

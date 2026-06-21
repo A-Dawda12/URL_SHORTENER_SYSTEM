@@ -47,5 +47,6 @@ export type UrlData = {
     shortUrl: string;
     originalUrl: string;
     title: string;
+    clickCount: number;
     createdAt: string;
 };

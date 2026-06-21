@@ -1,6 +1,6 @@
 package com.urlshortener.infrastructure.persistence.mongo.adapter;
 
-import com.urlshortener.domain.port.UrlLinkRepoistory;
+import com.urlshortener.domain.port.UrlLinkRepository;
 import com.urlshortener.domain.url.UrlLink;
 import com.urlshortener.infrastructure.persistence.mongo.document.UrlLinkDocument;
 import com.urlshortener.infrastructure.persistence.mongo.mapper.UrlLinkMapper;
@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class UrlRepositoryAdapter implements UrlLinkRepoistory {
+public class UrlRepositoryAdapter implements UrlLinkRepository {
 
     private final UrlLinkMongoRepository mongoRepository;
     private final UrlLinkMapper urlLinkMapper;

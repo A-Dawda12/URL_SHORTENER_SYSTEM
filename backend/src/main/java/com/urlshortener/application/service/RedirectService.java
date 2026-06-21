@@ -2,7 +2,7 @@ package com.urlshortener.application.service;
 
 import com.urlshortener.domain.exception.UrlLinkUnavailableException;
 import com.urlshortener.domain.exception.UrlNotFoundException;
-import com.urlshortener.domain.port.UrlLinkRepoistory;
+import com.urlshortener.domain.port.UrlLinkRepository;
 import com.urlshortener.domain.url.UrlLink;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class RedirectService {
 
-    private final UrlLinkRepoistory urlLinkRepoistory;
+    private final UrlLinkRepository urlLinkRepository;
     private final UrlCacheService urlCacheService;
 
     public String resolveOriginalUrl(String shortCode) {
@@ -26,7 +26,7 @@ public class RedirectService {
             throw new UrlNotFoundException(shortCode);
         }
 
-        UrlLink urlLink = urlLinkRepoistory.findByShortCode(shortCode)
+        UrlLink urlLink = urlLinkRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> {
                     urlCacheService.cacheMiss(shortCode);
                     return new UrlNotFoundException(shortCode);
