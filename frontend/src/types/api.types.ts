@@ -47,5 +47,24 @@ export type UrlData = {
     shortUrl: string;
     originalUrl: string;
     title: string;
+    clickCount: number;
     createdAt: string;
 };
+
+export type DailyClickCountData = {
+    date: string;
+    clicks: number;
+};
+
+export type ReferrerCountData = {
+    referrer: string;
+    clicks: number;
+}
+
+export type UrlAnalyticsData = {
+    urLId: string;
+    shortCode: string;
+    totalClicks: number;
+    clicksByDay: DailyClickCountData[];
+    topReferrers: ReferrerCountData[];
+}

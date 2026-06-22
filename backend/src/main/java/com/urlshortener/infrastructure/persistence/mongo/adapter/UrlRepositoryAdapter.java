@@ -1,11 +1,15 @@
 package com.urlshortener.infrastructure.persistence.mongo.adapter;
 
-import com.urlshortener.domain.port.UrlLinkRepoistory;
+import com.urlshortener.domain.port.UrlLinkRepository;
 import com.urlshortener.domain.url.UrlLink;
 import com.urlshortener.infrastructure.persistence.mongo.document.UrlLinkDocument;
 import com.urlshortener.infrastructure.persistence.mongo.mapper.UrlLinkMapper;
 import com.urlshortener.infrastructure.persistence.mongo.repository.UrlLinkMongoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,10 +17,11 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class UrlRepositoryAdapter implements UrlLinkRepoistory {
+public class UrlRepositoryAdapter implements UrlLinkRepository {
 
     private final UrlLinkMongoRepository mongoRepository;
     private final UrlLinkMapper urlLinkMapper;
+    private final MongoTemplate mongoTemplate;
 
     @Override
     public UrlLink save(UrlLink urlLink) {
@@ -51,6 +56,13 @@ public class UrlRepositoryAdapter implements UrlLinkRepoistory {
     @Override
     public void deleteById(String id) {
         mongoRepository.deleteById(id);
+    }
+
+    @Override
+    public void incrementClickCount(String id) {
+        Query query = Query.query(Criteria.where("_id").is(id));
+        Update update = new Update().inc("clickCount", 1L);
+        mongoTemplate.updateFirst(query, update, UrlLinkDocument.class);
     }
 
 }

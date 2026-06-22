@@ -12,6 +12,7 @@ public class UrlResponse {
     private final String shortUrl;
     private final String originalUrl;
     private final String title;
+    private final long clickCount;
     private final Instant createdAt;
 
     public UrlResponse(
@@ -20,6 +21,7 @@ public class UrlResponse {
           String shortUrl,
           String originalUrl,
           String title,
+          long clickCount,
           Instant createdAt
     ) {
         this.urlId = urlId;
@@ -27,6 +29,7 @@ public class UrlResponse {
         this.shortUrl = shortUrl;
         this.originalUrl = originalUrl;
         this.title = title;
+        this.clickCount = clickCount;
         this.createdAt = createdAt;
     }
 
@@ -48,6 +51,10 @@ public class UrlResponse {
     
     public String title() {
         return title;
+    }
+
+    public long clickCount() {
+        return clickCount;
     }
 
     public Instant createdAt() {

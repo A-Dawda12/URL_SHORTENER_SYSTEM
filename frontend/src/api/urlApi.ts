@@ -1,4 +1,4 @@
-import type { UrlData } from '../types/api.types';
+import type { UrlAnalyticsData, UrlData } from '../types/api.types';
 import { apiRequest } from './client';
 
 export type CreateUrlPayload = {
@@ -24,6 +24,13 @@ export function listUrls(): Promise<UrlData[]> {
 export function deleteUrl(urlId: string): Promise<void> {
     return apiRequest<void>(`/api/v1/urls/${urlId}`, {
         method: 'DELETE',
+        auth: true
+    })
+}
+
+export function getUrlAnalytics(urlId: string): Promise<UrlAnalyticsData> {
+    return apiRequest<UrlAnalyticsData>(`/api/v1/urls/${urlId}/analytics`, {
+        method: 'GET',
         auth: true
     })
 }

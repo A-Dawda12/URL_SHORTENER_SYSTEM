@@ -3,7 +3,9 @@ package com.urlshortener.api.v1.controller;
 import com.urlshortener.api.v1.dto.request.CreateUrlRequest;
 import com.urlshortener.api.v1.dto.response.ApiMeta;
 import com.urlshortener.api.v1.dto.response.ApiResponse;
+import com.urlshortener.api.v1.dto.response.UrlAnalyticsResponse;
 import com.urlshortener.api.v1.dto.response.UrlResponse;
+import com.urlshortener.application.service.AnalyticsService;
 import com.urlshortener.application.service.UrlService;
 import com.urlshortener.infrastructure.security.AuthenticatedUser;
 import com.urlshortener.infrastructure.security.SecurityUtils;
@@ -26,6 +28,7 @@ import java.util.UUID;
 public class UrlController {
 
     private final UrlService urlService;
+    private final AnalyticsService analyticsService;
 
     @GetMapping
     public ApiResponse<List<UrlResponse>> list() {
@@ -47,6 +50,13 @@ public class UrlController {
     public void delete(@PathVariable String urlId) {
         AuthenticatedUser user = SecurityUtils.requireAuthenticatedUser();
         urlService.deleteUrl(user.getUserId(), urlId);
+    }
+
+    @GetMapping("/{urlId}/analytics")
+    public ApiResponse<UrlAnalyticsResponse> analytics(@PathVariable String urlId) {
+        AuthenticatedUser user = SecurityUtils.requireAuthenticatedUser();
+        UrlAnalyticsResponse data = analyticsService.getAnalytics(user.getUserId(), urlId);
+        return ApiResponse.ok(data, meta());
     }
 
     private ApiMeta meta() {

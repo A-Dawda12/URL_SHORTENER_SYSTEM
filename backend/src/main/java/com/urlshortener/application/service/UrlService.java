@@ -5,7 +5,7 @@ import com.urlshortener.api.v1.dto.response.UrlResponse;
 import com.urlshortener.config.AppProperties;
 import com.urlshortener.domain.exception.UrlForbiddenException;
 import com.urlshortener.domain.exception.UrlNotFoundException;
-import com.urlshortener.domain.port.UrlLinkRepoistory;
+import com.urlshortener.domain.port.UrlLinkRepository;
 import com.urlshortener.domain.url.UrlLink;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UrlService {
 
-    private final UrlLinkRepoistory urlLinkRepoistory;
+    private final UrlLinkRepository urlLinkRepository;
     private final ShortCodeGenerator shortCodeGenerator;
     private final AppProperties appProperties;
     private final UrlCacheService urlCacheService;
@@ -36,25 +36,25 @@ public class UrlService {
                 .clickCount(0)
                 .build();
 
-        UrlLink saved = urlLinkRepoistory.save(urlLink);
+        UrlLink saved = urlLinkRepository.save(urlLink);
         return toResponse(saved);
     }
 
     public List<UrlResponse> listUrlsForOwner(String ownerId) {
-        return urlLinkRepoistory.findByOwnerId(ownerId).stream()
+        return urlLinkRepository.findByOwnerId(ownerId).stream()
                 .map(this::toResponse)
                 .toList();
     }
 
     public void deleteUrl(String ownerId, String urlId) {
-        UrlLink urlLink = urlLinkRepoistory.findById(urlId)
+        UrlLink urlLink = urlLinkRepository.findById(urlId)
                 .orElseThrow(() -> new UrlNotFoundException(urlId));
 
         if(!ownerId.equals(urlLink.getOwnerId())) {
             throw new UrlForbiddenException();
         }
         String shortCode = urlLink.getShortCode();
-        urlLinkRepoistory.deleteById(urlId);
+        urlLinkRepository.deleteById(urlId);
         urlCacheService.evict(shortCode);
     }
 
@@ -68,6 +68,7 @@ public class UrlService {
                 shortUrl,
                 urlLink.getOriginalUrl(),
                 urlLink.getTitle(),
+                urlLink.getClickCount(),
                 urlLink.getCreatedAt()
         );
     }
