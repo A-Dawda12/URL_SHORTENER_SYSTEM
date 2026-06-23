@@ -68,18 +68,30 @@ public class GlobalExceptionHandler {
         return error(HttpStatus.GONE, "URL_UNAVAILABLE", ex.getMessage());
     }
 
+    /** Rate limit exceeded. */
+    @ExceptionHandler(RateLimitExceededException.class)
+    ResponseEntity<ApiErrorResponse> handleRateLimit(RateLimitExceededException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .header("Retry-After", String.valueOf(ex.getRetryAfterSeconds()))
+                .body(errorBody(HttpStatus.TOO_MANY_REQUESTS, "RATE_LIMIT_EXCEEDED", ex.getMessage()));
+    }
+
     /** Fallback for unexpected errors. */
     @ExceptionHandler(Exception.class)
     ResponseEntity<ApiErrorResponse> handleUnhandled(Exception ex) {
         return error(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "An unexpected error occurred");
     }
 
+
     private ResponseEntity<ApiErrorResponse> error(HttpStatus status, String code, String message) {
+        return ResponseEntity.status(status).body(errorBody(status, code, message));
+    }
+
+    private ApiErrorResponse errorBody(HttpStatus status, String code, String message) {
         ApiMeta meta = new ApiMeta(UUID.randomUUID().toString(), Instant.now());
-        ApiErrorResponse body = new ApiErrorResponse(
+        return new ApiErrorResponse(
                 false,
                 new ApiErrorResponse.ErrorBody(code, message, status.value()),
                 meta);
-        return ResponseEntity.status(status).body(body);
     }
 }
