@@ -1,6 +1,7 @@
 package com.urlshortener.config;
 
 import com.urlshortener.infrastructure.security.JwtAuthenticationFilter;
+import com.urlshortener.infrastructure.security.RateLimitFilter;
 import com.urlshortener.infrastructure.security.RestAuthenticationEntryPoint;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class SecurityConfig {
     private static final Pattern SHORT_CODE_PATTERN = Pattern.compile("^[0-9a-zA-Z]{1,12}$");
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final RestAuthenticationEntryPoint authenticationEntryPoint;
+    private final RateLimitFilter rateLimitFilter;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -47,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(this::isPublicRedirect).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(rateLimitFilter, JwtAuthenticationFilter.class)
                 .build();
     }
 
