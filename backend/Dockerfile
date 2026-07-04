@@ -2,19 +2,21 @@
 FROM maven:3.9-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 
-copy pom.xml .
+COPY pom.xml .
 RUN mvn -B dependency:go-offline
 
 COPY src ./src
-RUN mvn -B -DskipTest package
+RUN mvn -B -DskipTests package
 
-FROM eclipse-termurin:21-jre-apline
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-RUN apk add --n-cache wget \
+RUN apk add --no-cache wget \
     && addgroup -S app \
-    && adduser -S app -G  aap \
-COPY --from=build /app/target/url-shortener-backend-*.jar aap.jar \
+    && adduser -S app -G app
+
+COPY --from=build /app/target/url-shortener-backend-*.jar app.jar
+
 USER app
 
 EXPOSE 8080
